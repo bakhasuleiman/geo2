@@ -1,0 +1,15 @@
+{
+  "name": "geo2-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.8",
+    "dotenv": "^16.4.5",
+    "cors": "^2.8.5"
+  }
+} 

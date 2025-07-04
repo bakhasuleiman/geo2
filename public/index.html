@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Гео-ссылка</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+    #status { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Гео-ссылка</h1>
+  <p>Для подтверждения местоположения разрешите доступ к геолокации.</p>
+  <div id="status">Ожидание разрешения...</div>
+  <script>
+    const pathParts = window.location.pathname.split('/');
+    const id = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2];
+    const status = document.getElementById('status');
+
+    function sendLocation(lat, lon) {
+      fetch(`/api/geo/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ latitude: lat, longitude: lon })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok) {
+          status.textContent = 'Местоположение успешно отправлено!';
+        } else {
+          status.textContent = 'Ошибка: ' + (data.error || 'Неизвестная ошибка');
+        }
+      })
+      .catch(() => {
+        status.textContent = 'Ошибка отправки данных на сервер.';
+      });
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          status.textContent = 'Отправка координат...';
+          sendLocation(pos.coords.latitude, pos.coords.longitude);
+        },
+        err => {
+          status.textContent = 'Доступ к геолокации не разрешён.';
+        }
+      );
+    } else {
+      status.textContent = 'Геолокация не поддерживается вашим устройством.';
+    }
+  </script>
+</body>
+</html> 
