@@ -26,9 +26,6 @@ app.post('/api/generate', (req, res) => {
 app.post('/api/geo/:id', async (req, res) => {
   const { id } = req.params;
   const { latitude, longitude } = req.body;
-  if (!links.has(id)) {
-    return res.status(404).json({ error: 'Invalid link' });
-  }
   if (typeof latitude !== 'number' || typeof longitude !== 'number') {
     return res.status(400).json({ error: 'Invalid coordinates' });
   }
