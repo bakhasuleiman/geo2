@@ -14,8 +14,8 @@
   <p>Для подтверждения местоположения разрешите доступ к геолокации.</p>
   <div id="status">Ожидание разрешения...</div>
   <script>
-    const pathParts = window.location.pathname.split('/');
-    const id = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2];
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const id = pathParts[pathParts.length - 1];
     const status = document.getElementById('status');
 
     function sendLocation(lat, lon) {
